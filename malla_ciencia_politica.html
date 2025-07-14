@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malla Curricular - Ciencia Política 2025-1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: white;
+            overflow-x: auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px 25px;
+            border-radius: 10px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-width: 120px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #64ffda;
+            text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .malla-container {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .periodo {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .periodo-header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .materia {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .materia::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+        }
+
+        .materia:hover::before {
+            transform: translateX(100%);
+        }
+
+        .materia:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(100, 255, 218, 0.8);
+        }
+
+        .materia.disponible {
+            background: rgba(100, 255, 218, 0.2);
+            border-color: #64ffda;
+            box-shadow: 0 0 20px rgba(100, 255, 218, 0.3);
+        }
+
+        .materia.disponible:hover {
+            background: rgba(100, 255, 218, 0.3);
+            transform: translateY(-8px) scale(1.02);
+        }
+
+        .materia.aprobada {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4caf50;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .materia.aprobada::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5em;
+            color: #4caf50;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(76, 175, 80, 0.8);
+        }
+
+        .materia.bloqueada {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .materia.bloqueada:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .materia-codigo {
+            font-size: 0.8em;
+            color: #64ffda;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .materia-nombre {
+            font-size: 0.9em;
+            font-weight: bold;
+            line-height: 1.2;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .materia-creditos {
+            font-size: 0.8em;
+            color: #ffeb3b;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .materia-requisitos {
+            font-size: 0.7em;
+            color: #ff9800;
+            opacity: 0.9;
+        }
+
+        .materia-horas {
+            font-size: 0.7em;
+            color: #e1bee7;
+            opacity: 0.8;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #64ffda, #4caf50);
+            width: 0%;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .legend-disponible { background: rgba(100, 255, 218, 0.5); }
+        .legend-aprobada { background: rgba(76, 175, 80, 0.5); }
+        .legend-bloqueada { background: rgba(255, 255, 255, 0.2); }
+
+        @media (max-width: 1200px) {
+            .malla-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .malla-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .stats {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .malla-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: rgba(244, 67, 54, 0.9);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📚 Malla Curricular Interactiva</h1>
+        <p>Ciencia Política 2025-1 - Plan de Estudios</p>
+    </div>
+
+    <div class="controls">
+        <button class="control-btn" onclick="resetAll()">🔄 Reiniciar Todo</button>
+        <button class="control-btn" onclick="aprobarDisponibles()">✅ Aprobar Disponibles</button>
+        <button class="control-btn" onclick="toggleInfo()">ℹ️ Mostrar Info</button>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-value" id="aprobadas">0</div>
+            <div class="stat-label">Aprobadas</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="disponibles">6</div>
+            <div class="stat-label">Disponibles</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="bloqueadas">13</div>
+            <div class="stat-label">Bloqueadas</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="creditos">0</div>
+            <div class="stat-label">Créditos</div>
+        </div>
+    </div>
+
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div class="malla-container" id="mallaContainer">
+        <!-- Las materias se generan dinámicamente -->
+    </div>
+
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color legend-disponible"></div>
+            <span>Disponible</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color legend-aprobada"></div>
+            <span>Aprobada</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color legend-bloqueada"></div>
+            <span>Bloqueada</span>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Datos de las materias del plan de estudios
+        const materiasData = {
+            1: [
+                { codigo: '66020', nombre: 'ANTROPOLOGIA POLITICA', creditos: 4, requisitos: [] },
+                { codigo: '66021', nombre: 'INTRODUCCION A LA CIENCIA POLITICA', creditos: 2, requisitos: [] },
+                { codigo: '60170', nombre: 'LOGICA', creditos: 2, requisitos: [] },
+                { codigo: '62917', nombre: 'HISTORIA DE OCC. DESDE LA MOD.', creditos: 3, requisitos: [] },
+                { codigo: '62916', nombre: 'TERRITORIO, NACION Y FRONTERAS', creditos: 3, requisitos: [] },
+                { codigo: '62700', nombre: 'ELECTIVA DE CONTEXTO I', creditos: 2, requisitos: [] }
+            ],
+            2: [
+                { codigo: '66023', nombre: 'TEORIA DEL ESTADO', creditos: 4, requisitos: [] },
+                { codigo: '66022', nombre: 'TEORIA POLITICA CLASICA', creditos: 3, requisitos: ['62917'] },
+                { codigo: '65114', nombre: 'DERECHO CONSTITUCIONAL GENERAL', creditos: 3, requisitos: [] },
+                { codigo: '52150', nombre: 'HISTORIA DE LAS DOCTRINAS ECONOMICAS', creditos: 2, requisitos: [] },
+                { codigo: '300332', nombre: 'EPISTEMOLOGIA DE LAS CIENCIAS SOCIALES', creditos: 2, requisitos: [] },
+                { codigo: '62701', nombre: 'ELECTIVA DE CONTEXTO II', creditos: 2, requisitos: [] }
+            ],
+            3: [
+                { codigo: '50278', nombre: 'ADMINISTRACION PUBLICA', creditos: 3, requisitos: [] },
+                { codigo: '66026', nombre: 'METODOLOGIA DE LA CIENCIA POLITICA', creditos: 3, requisitos: ['300332'] },
+                { codigo: '66025', nombre: 'SISTEMA Y REGIMEN POLITICO', creditos: 3, requisitos: ['66021'] },
+                { codigo: '66024', nombre: 'TEORIA POLITICA, MODERNA Y CONTEMPORANEA', creditos: 3, requisitos: ['66022'] },
+                { codigo: '65690', nombre: 'DERECHO ADMINISTRATIVO COLOMBIANO', creditos: 3, requisitos: ['65114'] },
+                { codigo: '63140', nombre: 'SOCIOLOGIA', creditos: 2, requisitos: [] }
+            ],
+            4: [
+                { codigo: '66031', nombre: 'ELECTIVA DE PROFUNDIZACION I', creditos: 2, requisitos: [] },
+                { codigo: '66029', nombre: 'GEOPOLITICA Y RELACIONES INTERNACIONALES', creditos: 3, requisitos: ['62916'] },
+                { codigo: '66027', nombre: 'GOBIERNO Y POLITICAS PUBLICAS', creditos: 3, requisitos: ['66021'] },
+                { codigo: '66028', nombre: 'PARTIDOS Y SISTEMAS DE PARTIDOS', creditos: 3, requisitos: ['66025'] },
+                { codigo: '66030', nombre: 'TEORIA DE LA DEMOCRACIA', creditos: 3, requisitos: ['66024'] },
+                { codigo: '22279', nombre: 'FUNDAMENTOS DE ESTADISTICA', creditos: 3, requisitos: [] }
+            ],
+            5: [
+                { codigo: '66033', nombre: 'ELECCIONES Y SISTEMAS ELECTORALES', creditos: 3, requisitos: ['66028'] },
+                { codigo: '66036', nombre: 'ELECTIVA DE PROFUNDIZACION II', creditos: 3, requisitos: ['66031'] },
+                { codigo: '66032', nombre: 'ENFOQUES Y TECNICAS DE LA CIENCA POLITICA', creditos: 4, requisitos: ['66026', '22279'] },
+                { codigo: '66034', nombre: 'ORGANIZACION TERRITORIAL DEL ESTADO', creditos: 3, requisitos: ['62916'] },
+                { codigo: '66035', nombre: 'PLANEACION DEL DESARROLLO TERRITORIAL', creditos: 3, requisitos: [] },
+                { codigo: '52509', nombre: 'HACIENDA Y PRESUPUESTO PUBLICO', creditos: 3, requisitos: [] }
+            ],
+            6: [
+                { codigo: '50279', nombre: 'GERENCIA PUBLICA', creditos: 3, requisitos: ['50278'] },
+                { codigo: '66039', nombre: 'ELECTIVA DE PROFUNDIZACION III', creditos: 3, requisitos: ['66036'] },
+                { codigo: '66038', nombre: 'EVALUACION DE POLITICAS PUBLICAS', creditos: 3, requisitos: ['66027'] },
+                { codigo: '66037', nombre: 'COMUNICACION Y MARKETING POLITICO', creditos: 3, requisitos: ['66033'] },
+                { codigo: '65691', nombre: 'DERECHO PARLAMENTARIO Y PROCESOS LEGISLATIVOS', creditos: 4, requisitos: [] },
+                { codigo: '62702', nombre: 'ELECTIVA DE CONTEXTO III', creditos: 2, requisitos: [] }
+            ],
+            7: [
+                { codigo: '66044', nombre: 'ELECTIVA DE PROFUNDIZACION IV', creditos: 3, requisitos: ['66039'] },
+                { codigo: '66041', nombre: 'ETICA Y POLITICA', creditos: 3, requisitos: ['50279'] },
+                { codigo: '66040', nombre: 'NEGOCIACION Y GESTION DE CONFLICTOS', creditos: 3, requisitos: [] },
+                { codigo: '66043', nombre: 'REGIMENES POLITICOS COMPARADOS', creditos: 3, requisitos: ['66032'] },
+                { codigo: '66042', nombre: 'SEMINARIO DE INVESTIGACION I', creditos: 4, requisitos: ['66026'] },
+                { codigo: '62703', nombre: 'ELECTIVA DE CONTEXTO IV', creditos: 2, requisitos: [] }
+            ],
+            8: [
+                { codigo: '66045', nombre: 'CONSTRUCCION Y ANALISIS DEL DISCURSO POLITICO', creditos: 3, requisitos: ['66037'] },
+                { codigo: '66047', nombre: 'PRACTICA FORMATIVA', creditos: 12, requisitos: [] },
+                { codigo: '66046', nombre: 'SEMINARIO DE INVESTIGACION II', creditos: 4, requisitos: ['66042'] }
+            ]
+        };
+
+        // Estado de las materias
+        let estadoMaterias = {};
+        let totalCreditos = 0;
+        let totalMaterias = 0;
+
+        // Inicializar el estado
+        function inicializarEstado() {
+            Object.values(materiasData).forEach(periodo => {
+                periodo.forEach(materia => {
+                    estadoMaterias[materia.codigo] = 'bloqueada';
+                    totalMaterias++;
+                });
+            });
+            actualizarDisponibilidad();
+        }
+
+        // Verificar si una materia está disponible
+        function estaDisponible(materia) {
+            return materia.requisitos.every(req => estadoMaterias[req] === 'aprobada');
+        }
+
+        // Actualizar disponibilidad de materias
+        function actualizarDisponibilidad() {
+            Object.values(materiasData).forEach(periodo => {
+                periodo.forEach(materia => {
+                    if (estadoMaterias[materia.codigo] !== 'aprobada') {
+                        estadoMaterias[materia.codigo] = estaDisponible(materia) ? 'disponible' : 'bloqueada';
+                    }
+                });
+            });
+        }
+
+        // Aprobar una materia
+        function aprobarMateria(codigo) {
+            const materia = encontrarMateria(codigo);
+            if (!materia) return false;
+
+            if (estadoMaterias[codigo] === 'disponible') {
+                estadoMaterias[codigo] = 'aprobada';
+                totalCreditos += materia.creditos;
+                actualizarDisponibilidad();
+                actualizarUI();
+                mostrarNotificacion(`✅ ${materia.nombre} aprobada!`);
+                return true;
+            } else if (estadoMaterias[codigo] === 'aprobada') {
+                estadoMaterias[codigo] = 'disponible';
+                totalCreditos -= materia.creditos;
+                
+                // Bloquear materias que dependían de esta
+                Object.values(materiasData).forEach(periodo => {
+                    periodo.forEach(mat => {
+                        if (mat.requisitos.includes(codigo) && estadoMaterias[mat.codigo] === 'aprobada') {
+                            estadoMaterias[mat.codigo] = 'bloqueada';
+                            totalCreditos -= mat.creditos;
+                        }
+                    });
+                });
+                
+                actualizarDisponibilidad();
+                actualizarUI();
+                mostrarNotificacion(`↩️ ${materia.nombre} desaprobada`);
+                return true;
+            } else {
+                mostrarNotificacion(`❌ ${materia.nombre} no está disponible`, 'error');
+                return false;
+            }
+        }
+
+        // Encontrar una materia por código
+        function encontrarMateria(codigo) {
+            for (const periodo of Object.values(materiasData)) {
+                const materia = periodo.find(m => m.codigo === codigo);
+                if (materia) return materia;
+            }
+            return null;
+        }
+
+        // Generar HTML para una materia
+        function generarMateriaHTML(materia) {
+            const estado = estadoMaterias[materia.codigo];
+            const requisitosTexto = materia.requisitos.length > 0 
+                ? `Req: ${materia.requisitos.join(', ')}`
+                : 'Sin requisitos';
+
+            return `
+                <div class="materia ${estado}" onclick="aprobarMateria('${materia.codigo}')" title="${materia.nombre}">
+                    <div class="materia-codigo">${materia.codigo}</div>
+                    <div class="materia-nombre">${materia.nombre}</div>
+                    <div class="materia-creditos">📚 ${materia.creditos} créditos</div>
+                    <div class="materia-requisitos">${requisitosTexto}</div>
+                </div>
+            `;
+        }
+
+        // Actualizar la UI
+        function actualizarUI() {
+            const container = document.getElementById('mallaContainer');
+            container.innerHTML = '';
+
+            // Generar periodos
+            for (let i = 1; i <= 8; i++) {
+                const periodoDiv = document.createElement('div');
+                periodoDiv.className = 'periodo';
+                
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'periodo-header';
+                headerDiv.textContent = `Período ${i}`;
+                periodoDiv.appendChild(headerDiv);
+
+                materiasData[i].forEach(materia => {
+                    const materiaDiv = document.createElement('div');
+                    materiaDiv.innerHTML = generarMateriaHTML(materia);
+                    periodoDiv.appendChild(materiaDiv.firstElementChild);
+                });
+
+                container.appendChild(periodoDiv);
+            }
+
+            // Actualizar estadísticas
+            actualizarEstadisticas();
+        }
+
+        // Actualizar estadísticas
+        function actualizarEstadisticas() {
+            const aprobadas = Object.values(estadoMaterias).filter(estado => estado === 'aprobada').length;
+            const disponibles = Object.values(estadoMaterias).filter(estado => estado === 'disponible').length;
+            const bloqueadas = Object.values(estadoMaterias).filter(estado => estado === 'bloqueada').length;
+
+            document.getElementById('aprobadas').textContent = aprobadas;
+            document.getElementById('disponibles').textContent = disponibles;
+            document.getElementById('bloqueadas').textContent = bloqueadas;
+            document.getElementById('creditos').textContent = totalCreditos;
+
+            // Actualizar barra de progreso
+            const progreso = (aprobadas / totalMaterias) * 100;
+            document.getElementById('progressFill').style.width = `${progreso}%`;
+        }
+
+        // Mostrar notificación
+        function mostrarNotificacion(mensaje, tipo = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = mensaje;
+            notification.className = `notification ${tipo} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Funciones de control
+        function resetAll() {
+            if (confirm('¿Estás seguro de que quieres reiniciar todo el progreso?')) {
+                estadoMaterias = {};
+                totalCreditos = 0;
+                inicializarEstado();
+                actualizarUI();
+                mostrarNotificacion('🔄 Malla reiniciada');
+            }
+        }
+
+        function aprobarDisponibles() {
+            let aprobadas = 0;
+            Object.keys(estadoMaterias).forEach(codigo => {
+                if (estadoMaterias[codigo] === 'disponible') {
+                    const materia = encontrarMateria(codigo);
+                    if (materia) {
+                        estadoMaterias[codigo] = 'aprobada';
+                        totalCreditos += materia.creditos;
+                        aprobadas++;
+                    }
+                }
+            });
+            
+            if (aprobadas > 0) {
+                actualizarDisponibilidad();
+                actualizarUI();
+                mostrarNotificacion(`✅ ${aprobadas} materias aprobadas automáticamente`);
+            } else {
+                mostrarNotificacion('ℹ️ No hay materias disponibles para aprobar', 'error');
+            }
+        }
+
+        function toggleInfo() {
+            const info = `
+📋 INSTRUCCIONES:
+• Haz clic en una materia DISPONIBLE (azul) para aprobarla
+• Las materias APROBADAS (verde) se pueden desaprobar haciendo clic
+• Las materias BLOQUEADAS (gris) necesitan requisitos
+• El progreso se guarda automáticamente en tu sesión
+
+📊 ESTADÍSTICAS:
+• Total de materias: ${totalMaterias}
+• Total de créditos del plan: ${Object.values(materiasData).flat().reduce((sum, m) => sum + m.creditos, 0)}
+• Modalidad: Presencial
+• Jornada: Diurna
+• Períodos: 8
+            `;
+            alert(info);
+        }
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', () => {
+            inicializarEstado();
+            actualizarUI();
+            mostrarNotificacion('🎓 Malla Curricular cargada correctamente');
+        });
+    </script>
+</body>
+</html>
